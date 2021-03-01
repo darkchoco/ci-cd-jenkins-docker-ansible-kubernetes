@@ -3,6 +3,8 @@
   hosts: all
   vars_files:
     - /opt/docker/deploy-using-ansible/secret
+  vars:
+    image_version: "{{ ver }}"
   # Doesn't need root access to create an image
   #become: true 
 
@@ -13,14 +15,14 @@
       chdir: /opt/docker/deploy-using-ansible
 
   - name: create tag to image
-    command: docker tag spring-boot-webapp {{ecr}}/spring-boot-webapp
+    command: docker tag spring-boot-webapp {{ ecr }}/spring-boot-webapp
 
   # https://stackoverflow.com/questions/58695853/docker-image-tagging-in-ecr
   - name: push image on to ECR (will become the ":latest")
-    command: docker push {{ecr}}/spring-boot-webapp
+    command: docker push {{ ecr }}/spring-boot-webapp
 
   - name: create tag to image (with version info)
-    command: docker tag spring-boot-webapp {{ecr}}/spring-boot-webapp:0.1
+    command: docker tag spring-boot-webapp {{ ecr }}/spring-boot-webapp:{{ ver }}
 
   - name: push image on to ECR
-    command: docker push {{ecr}}/spring-boot-webapp:0.1
+    command: docker push {{ ecr }}/spring-boot-webapp:{{ ver }}

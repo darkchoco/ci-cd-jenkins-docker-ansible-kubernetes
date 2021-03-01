@@ -19,8 +19,14 @@
     command: docker rmi {{ecr}}/spring-boot-webapp:latest
     ignore_errors: yes
 
+  - name: authentication token
+    # command 내에서는 pipe(|)를 쓸 수 없기 때문에 shell 을 쓴다.
+    # https://stackoverflow.com/questions/24679591/ansible-command-module-says-that-is-illegal-character
+    shell: >
+      aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin {{ecr}}
+
   - name: pull docker image from ECR
     command: docker pull {{ecr}}/spring-boot-webapp:latest
 
   - name: run docker container
-    command: docker run -d --name spring-boot-webapp-container -p 8080:8080 spring-boot-webapp
+    command: docker run -d --name spring-boot-webapp-container -p 8080:8080 {{ecr}}/spring-boot-webapp:latest

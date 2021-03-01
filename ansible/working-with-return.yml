@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  gather_facts: no
+  #strategy: debug
+  tasks:
+ 
+    - name: run this command and ignore the result
+      shell: ping -c 1 8.8.8.8
+      register: pingout
+      ignore_errors: yes
+ 
+    - debug: msg="{{ pingout.rc }}"
+ 
+ 
+    - name: Prepare well output
+      raw: echo "What a wonderful world"
+      register: output
+      when:  pingout.rc == 0
+ 
+    - debug: var=output
+ 
+ 
+    - name: run this command and ignore the result
+      raw: ping -c 1 8.8.8.7
+      register: pingout2
+      ignore_errors: yes
+    - debug: msg="{{ pingout2.rc }}"
+ 
+ 
+    - name: run this command if something wrong
+      shell: echo "Something goes wrong :)"
+      register: output2
+      when:  pingout2.rc != 0
+    - debug: var=output2
